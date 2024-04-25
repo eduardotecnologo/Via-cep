@@ -4,28 +4,27 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import javax.management.RuntimeErrorException;
+
 import com.google.gson.Gson;
 
 public class ConsultaCep {
-    public Endereco buscaEndereco (String cep) throws IOException, InterruptedException {
+    public Endereco buscaEndereco (int cep) {
 
         URI endereco = URI.create("https://viacep.com.br/ws/" + cep + "/json/");
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(endereco)
-                .build();
+                .build();        
         try {
-        	HttpResponse<String> response = HttpClient.newHttpClient()
-            .send(request, HttpResponse.BodyHandlers.ofString());
-
-        String body = response.body();
-
-        return new Gson().fromJson(body, Endereco.class);
-
-        	}catch(IOException | InterruptedException e) {
-        		System.out.println("Erro ao buscar endereço!");
-                throw e;
+        	HttpResponse<String> response = HttpClient
+        			.newHttpClient()
+        			.send(request, HttpResponse.BodyHandlers.ofString());
+        	return new Gson().fromJson(response.body(), Endereco.class);
+        	
+        	}catch(Exception e) {
+        		throw new RuntimeErrorException(null, "Erro ao buscar endereço!");
         }
       }
 }
